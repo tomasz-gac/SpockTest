@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="eu.spock.Test1" tests="1" skipped="0" failures="1" errors="0" timestamp="2020-07-06T10:55:09" hostname="puchatek-MS-7B98" time="0.085">
+  <properties/>
+  <testcase name="two plus two should equal four" classname="eu.spock.Test1" time="0.085">
+    <failure message="Condition not satisfied:&#10;&#10;result == 4&#10;|      |&#10;0      false&#10;" type="org.spockframework.runtime.SpockComparisonFailure">Condition not satisfied:
+
+result == 4
+|      |
+0      false
+
+	at eu.spock.Test1.two plus two should equal four(Test1.groovy:16)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

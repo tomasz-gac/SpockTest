@@ -1,0 +1,76 @@
+plugins {
+    id 'java'
+    id 'groovy'
+}
+
+group = 'eu.solidcraft'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    //	To use groovy 3 and spoock 2 check first if those ale closed
+    //	https://github.com/spring-projects/spring-boot/issues/20119
+    //	https://issues.apache.org/jira/browse/GROOVY-9407
+    //	Spring boot tests ship with groovy 2
+    set('spockVersion', '2.0-M2-groovy-2.5')
+}
+
+test {
+    useJUnitPlatform()
+    //prints the test outcome in shell
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+dependencies {
+    //Tests
+    testImplementation "org.codehaus.groovy:groovy-all:2.5.11"
+    testCompile platform("org.spockframework:spock-bom:$spockVersion")
+    testCompile "org.spockframework:spock-core"
+    testRuntime "net.bytebuddy:byte-buddy:1.9.3"          // allows mocking of classes (in addition to interfaces)
+    testRuntime "org.objenesis:objenesis:2.6"    // allows mocking of classes without default constructor (together with CGLIB)
+
+    //and if you want testcontainers instead of h2 in memory
+    //	testImplementation 'org.testcontainers:spock:1.12.5'
+    //you can also get a running kafka instance in docker
+    //	testImplementation 'org.testcontainers:kafka:1.12.5'
+
+    //there is a bug in security boot 2.2.1, that blows up tests using csrf() static method
+    //if this is not explicitly on the classpath
+    //implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+}
+
+test {
+    //Detect wrong test configuration - workaround for https://github.com/gradle/gradle/issues/7452
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            if (result.testCount == 0) {
+                throw new IllegalStateException("No tests were found. Failing the build")
+            }
+        }
+    }
+}
+
+
+compileJava {
+    options.incremental = true
+    options.compilerArgs << '-parameters'
+    options.compilerArgs << '-Xlint:unchecked'
+}
+
